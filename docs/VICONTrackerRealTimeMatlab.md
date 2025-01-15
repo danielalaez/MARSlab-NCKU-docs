@@ -21,6 +21,8 @@ To set it up:
 3. Under the camera system, show advanced features. Navigate till UDP. Make sure that the UDP server is enabled (checkbox), the IP address (typically *localhost*), and the port match those set in the Simulink UDP receive block.
 4. Load the Simulink udp_tracker.slx file. There should be a scope connected to visualize positions in real-time. Open that scope and press play to watch it in action. You can modify the simulation time to increase or decrease it.
 
+Please note that if the selected object is currently not in sight by any of the cameras, there will be no output!.
+
 ![matlabudpblocks](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/matlab-udp-blocks.png?raw=true)
 
 ## Connect the Arduino interface with the NX10 radio transmitter
