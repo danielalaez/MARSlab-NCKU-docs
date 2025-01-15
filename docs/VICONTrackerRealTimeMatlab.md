@@ -21,14 +21,14 @@ To set it up:
 3. Under the camera system, show advanced features. Navigate till UDP. Make sure that the UDP server is enabled (checkbox), the IP address (typically *localhost*), and the port match those set in the Simulink UDP receive block.
 4. Load the Simulink udp_tracker.slx file. There should be a scope connected to visualize positions in real-time. Open that scope and press play to watch it in action. You can modify the simulation time to increase or decrease it.
 
-![alt text]()
+![matlabudpblocks](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/matlab-udp-blocks.png?raw=true)
 
 ## 2. Gamepad controller
 This file is currently setup for use with the USB 0908A 8 ch. RC Simulator as a gamepad, and the Spektrum NX10 as a radio. This requires an Arduino UNO (or equivalent) to interface between the PC and the NX10 transmitter. 
 
-![alt text]()
+![gamepadcontroller](https://raw.githubusercontent.com/danielalaez/MARSlab-NCKU-docs/refs/heads/main/docs/img/gamepadcontroller.png)
 
 
 ## 3. testcontroller (Flapping wing FAWT PID control setup)
 
-![alt text]()
+![testcontroller](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/testcontroller.png?raw=true)
