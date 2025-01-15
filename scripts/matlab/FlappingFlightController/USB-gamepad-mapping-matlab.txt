@@ -1,0 +1,4 @@
+Joystick Input/1:2 Throttle 0.840 -0.6875
+Joystick Input/1:4 Yaw 0.980 -0.695
+Joystick Input/1:1 Pitch 0.800 -0.7
+Joystick Input/1:5 Roll 0.873 -0.867
