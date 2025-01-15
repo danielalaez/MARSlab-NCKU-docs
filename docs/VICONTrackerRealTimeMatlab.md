@@ -23,6 +23,18 @@ To set it up:
 
 ![matlabudpblocks](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/matlab-udp-blocks.png?raw=true)
 
+## Connect the Arduino interface with the NX10 radio transmitter
+**Please: read this section carefully before running any tests!
+For any communication to be established between the PC running Simulink and the Flapping wing, we have created an Arduino interface that connects with the NX10 radio to send the commands via radio to the flapping wing onboard receiver. 
+
+The Arduino must first be connected via USB to the PC running simulink, and the **Ornithopter > ppm_matlab_interface.ino program must be uploaded**. Also, the script is configured to **output ppm channels on pin 3**. However, Arduino by default outputs 5V on digital outputs, so **a voltage divider must be included!**. For simplicity, we are running two 1K ohm resistors to the GND pin, and one 1K ohm resistor to pin 3. The signal wire can then be picked between both resistors, and the GND wire can be connected to the same GND terminal before the resistors. Please watch the photos below carefully for an adequate connection.
+
+![connection1](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/connections_1.jpg)
+
+![connection2](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/connections_2.jpg)
+
+As you can see from the photo, signal and GND wires are connected to the back serial port of the NX10 radio transmitter, on pins 1 and 2 starting from the bottom left. Oscilloscope probes can be connected (as shown in the photograph) to test the voltage output. Please carefully measure the signal voltage to test the voltage divider before connecting the radio transmitter.
+
 ## 2. Gamepad controller
 This file is currently setup for use with the USB 0908A 8 ch. RC Simulator as a gamepad, and the Spektrum NX10 as a radio. This requires an Arduino UNO (or equivalent) to interface between the PC and the NX10 transmitter. 
 
