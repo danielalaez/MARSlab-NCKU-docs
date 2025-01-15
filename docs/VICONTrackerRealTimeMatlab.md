@@ -2,9 +2,9 @@
 
 There are three separate projects contained within this Matlab Simulink project:
 
-1. udp_tracker.slx: basic implementation of a UDP receiver with a *decode_vicon_data* function to output real-time data.
-2. gamepadcontroller.slx: UDP receiver of VICON real-time data + interface for connecting a USB game controller, mapping the channels, scaling them to the desired ranges and output an array to the COM3 port (USB for Arduino)
-3. testcontroller.slx: UDP receiver of VICON real-time data + very basic PID controller for stabilizing the flapping wing in front of the FAWT.
+1. **udp_tracker.slx**: basic implementation of a UDP receiver with a *decode_vicon_data* function to output real-time data.
+2. **gamepadcontroller.slx**: UDP receiver of VICON real-time data + interface for connecting a USB game controller, mapping the channels, scaling them to the desired ranges and output an array to the COM3 port (USB for Arduino)
+3. **testcontroller.slx**: UDP receiver of VICON real-time data + very basic PID controller for stabilizing the flapping wing in front of the FAWT.
 
 ## 1. UDP Tracker
 The UDP tracker is intended for gathering the **most recent** package sent by the VICON Tracker app, despite the server speed and any delay introduced by the code.
