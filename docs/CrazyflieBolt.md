@@ -70,3 +70,57 @@ pip3 install --upgrade pip
 ```
 
 Afterwards, from the same terminal, run the commands listed in [the following guide](https://www.bitcraze.io/documentation/repository/crazyflie-lib-python/master/installation/usb_permissions/).
+
+Now, having *pip3* installed, things become very easy. Just run:
+
+```bash
+pip3 install cfclient
+```
+
+With that, you can finally type on the terminal (remember that the terminal must have the virtual environment active):
+
+```bash
+cfclient
+```
+
+For details on how to configure the client, refer to [this guide](https://www.bitcraze.io/documentation/tutorials/getting-started-with-crazyflie-2-x/#config-client).
+
+## Crazyflie-firmware
+Link to the official [bitcraze building and flashing documentation](https://github.com/bitcraze/crazyflie-firmware/blob/master/docs/building-and-flashing/build.md).
+
+Since we are using Ubuntu, you don't need to setup any virtual machines or development IDEs other than the packages listed below. Again, we recommend having the virtual environment active. In your terminal:
+
+```bash
+sudo apt-get install make gcc-arm-none-eabi
+```
+
+Then, you must clone the *crazyflie-firmware* repository from Github (important to add the --recursive option):
+
+```bash
+git clone --recursive https://github.com/bitcraze/crazyflie-firmware.git
+```
+
+Once you have cloned the repository, you can compile default configurations (included in *crazyflie-firmware/configs*):
+
+```bash
+make bolt_defconfig
+```
+
+After, you have to build the firmware with:
+
+```bash
+make -j$(nproc)
+```
+
+### Flashing
+If the compilation and build succeed, it's time for flashing. There are multiple options, but the easiest one we have found is to automatically enter bootloader mode and flash. For that, you first need to connect the Crazyflie Bolt and the USB radio dongle. You can check the radio dongle URI from the Crazyflie Client (after running scan, it should be visible). Once you know the URI of your platform:
+
+```bash
+cfloader flash build/[BUILD_NAME].bin stm32-fw -w [CRAZYFLIE_URI]
+```
+This will automatically change the state of your crazyflie and begin the upload. For reference, the command for my platform build and radio URI is as follows:
+
+```bash
+cfloader flash build/bolt.bin stm32-fw -w radio://0/80/2M/E7E7E7E7E7
+```
+
