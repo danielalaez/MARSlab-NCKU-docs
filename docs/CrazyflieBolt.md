@@ -124,3 +124,53 @@ This will automatically change the state of your crazyflie and begin the upload.
 cfloader flash build/bolt.bin stm32-fw -w radio://0/80/2M/E7E7E7E7E7
 ```
 
+## Customizing the Crazyflie-firmware
+There are multiple ways you can modify the firmware. One of the simplest, is to modify one of the existing default configs to add your desired configuration flags. The crazyflie firmware is currently structured in a way that *CONFIG_* boolean definitions define whether some parts of the code will be executed or not.
+
+For example, if we want the Crazyflie not to require pressing the arm button every time we want to fly, we can go into *configs/bolt_defconfig* and edit it. By default, it should contain:
+
+```
+CONFIG_PLATFORM_BOLT=y
+
+CONFIG_ESTIMATOR_AUTO_SELECT=y
+CONFIG_CONTROLLER_AUTO_SELECT=y
+
+CONFIG_MOTORS_REQUIRE_ARMING=y
+```
+
+If we comment out the last line of the file (*# CONFIG_MOTORS_REQUIRE_ARMING=y*) and press save, after repeating the compilation process the arming button should be disabled by default in the *cfclient*. Note that when compiling the code, we should see something like:
+
+```
+Build for the bolt platform!
+Build 22:59fa2f6c6837 (2024.10.2 +22) MODIFIED
+```
+
+### Change the motor output protocol
+A slightly more complex example is modifying the motor output protocol. The motor output is managed by what is called a driver, so the path to the motor setup is:
+
+```
+src/drivers/interface/motors.h
+```
+
+Inside that file, you will fine multiple *CONFIG_* variables that define the default behaviour of the motor driver. Currently, there are definitions for:
+
+- OneShot125: *CONFIG_MOTORS_ESC_PROTOCOL_ONESHOT125*
+- OneShot42: *CONFIG_MOTORS_ESC_PROTOCOL_ONESHOT42*
+- DShot: *CONFIG_MOTORS_ESC_PROTOCOL_DSHOT*
+- Standard PWM (400 Hz): *CONFIG_MOTORS_ESC_PROTOCOL_STANDARD_PWM*
+
+Including any of the definitions above in the default config file for the Bolt platform will enable the desired signal output for all the motors.
+
+Next, let's suppose your ESCs only support standard PWM input, but with a lower frequency than 400 Hz. Besides adding:
+
+```
+CONFIG_MOTORS_ESC_PROTOCOL_STANDARD_PWM=y
+```
+
+to the default configuration, you need to update the BLMC_PERIOD constant under the *#else* statement, which by default is set to 0.0025 s (2.5 ms = 400 Hz). Most standard PWM controllers should support 50 Hz, so you can increase the period up to:
+
+```
+#define BLMC_PERIOD 0.02   // 20 ms = 50 Hz
+```
+
+The compilation process remains the same. After applying the changes, compiling and flashing, you can measure the output signal with the oscilloscope to verify that it works as expected.
