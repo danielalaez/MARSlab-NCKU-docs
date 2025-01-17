@@ -197,3 +197,7 @@ Since the Bolt build will be noticeably heavier than a standard crazyflie, the d
 Another thing we have found is that the **Normal flight mode made the motors impossible to control** from take-off. That's because the minimum throttle is set to 25% by default, which is sufficient to violently flip the drone from the ground if there is a slight imbalance. To avoid that, you should fly in advanced flight mode, and lower the maximum and minimum values. Check the attached screenshot for reference.
 
 ![cfclient setup](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/advanced-setup.png?raw=true)
+
+Before your maiden flight, plug in the USB RC gamepad and create a new configuration to map all the channels. You can save that setup for future flights.
+
+With that set, you should be ready to go! Be careful with the throttle mapping, since USB RC simulator gamepads only recognize throttle from mid-stick > up.
