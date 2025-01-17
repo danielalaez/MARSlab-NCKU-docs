@@ -174,3 +174,18 @@ to the default configuration, you need to update the BLMC_PERIOD constant under 
 ```
 
 The compilation process remains the same. After applying the changes, compiling and flashing, you can measure the output signal with the oscilloscope to verify that it works as expected.
+
+## ESC Firmware changes
+Since the ESCs were extracted from a different quadcopter build, an unexpected behaviour was observed during initial testing. The Tarot 6A ESCs run BLHeli (not S!), which is an outdated firmware version. Currently crazyflie-firmware does not allow BLHeli setup through the Bolt board. Therefore, an external programmer must be used. The best solution we have found is following [this tutorial](https://www.locarbftw.com/programming-a-blheli-esc-with-blheli-suite-for-use-with-autonomous-boats/). By using an Arduino UNO and reprogramming it as a 4-way interface, it can be connected through the GND and Signal wires of the ESC to digital pin 11. Note that these ESCs only run at 2S, while Arduino outputs 5V. Therefore, you'll need to connect the positive and GND cables of the ESC to the crazyflie board, and the GND (yes, you need a splitter here) and signal wires to the Arduino.
+
+The current ESCs have already been flashed to the latest available BLHeli firmware (14.9), but if you tweak the parameters they might need reflashing. As for the parameters that have worked best for us, check the screenshot:
+
+Once all the ESCs have been calibrated, you can connect a potentiometer to A3 input on the Arduino UNO, reflash it with the *arduino/PWMpotentiometer* code, open up the terminal, and check the maximum and minimum PWM values. You may use the potentiometer as a PWM calibration utility. Please be careful when spinning the motors for long periods without propellers, they may burn!
+
+## Setup for initial flight
+*Most of the settings can now be modified through the cfclient. A great explanation of the GUI can be found in [this tutorial](https://www.bitcraze.io/documentation/repository/crazyflie-clients-python/master/userguides/userguide_client/flightcontrol_tab/).*
+
+Since the Bolt build will be noticeably heavier than a standard crazyflie, the default PID values are way too high. For reference, a similar build with their adjusted PID parameters can be found in: [https://www.bitcraze.io/2020/10/testing-crazyflie-bolt-and-1-cell-li-ion/](https://www.bitcraze.io/2020/10/testing-crazyflie-bolt-and-1-cell-li-ion/). To modify the PID values, go to the parameters tab (activate it from the top bar if it's not visible), and look for the rate and attitude PID values. As a rule of thumb, you should start lowering the values until the quad is almost non-responsive, and start increasing the values until you are satisfied. Once you are happy, reducing the values a little bit is on the safe side. Rembember that **restarting the crazyflie will cause the parameters to reset to default**. If you want to keep the PID values, **make sure to write them to the persistent memory one by one**.
+
+Another thing we have found is that the **Normal flight mode made the motors impossible to control** from take-off. That's because the minimum throttle is set to 25% by default, which is sufficient to violently flip the drone from the ground if there is a slight imbalance. To avoid that, you should fly in advanced flight mode, and lower the maximum and minimum values. Check the attached screenshot for reference.
+
