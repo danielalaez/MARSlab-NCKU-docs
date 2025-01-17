@@ -125,6 +125,7 @@ cfloader flash build/bolt.bin stm32-fw -w radio://0/80/2M/E7E7E7E7E7
 ```
 
 The radio module URI can be obtained from the cfclient GUI:
+
 ![cfclient radio](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/radio-settings.png?raw=true)
 
 
