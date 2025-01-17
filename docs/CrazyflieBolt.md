@@ -124,6 +124,10 @@ This will automatically change the state of your crazyflie and begin the upload.
 cfloader flash build/bolt.bin stm32-fw -w radio://0/80/2M/E7E7E7E7E7
 ```
 
+The radio module URI can be obtained from the cfclient GUI:
+![cfclient radio](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/radio-settings.png?raw=true)
+
+
 ## Customizing the Crazyflie-firmware
 There are multiple ways you can modify the firmware. One of the simplest, is to modify one of the existing default configs to add your desired configuration flags. The crazyflie firmware is currently structured in a way that *CONFIG_* boolean definitions define whether some parts of the code will be executed or not.
 
@@ -180,6 +184,8 @@ Since the ESCs were extracted from a different quadcopter build, an unexpected b
 
 The current ESCs have already been flashed to the latest available BLHeli firmware (14.9), but if you tweak the parameters they might need reflashing. As for the parameters that have worked best for us, check the screenshot:
 
+![BLHeli ESC setup](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/BLHeli.png?raw=true)
+
 Once all the ESCs have been calibrated, you can connect a potentiometer to A3 input on the Arduino UNO, reflash it with the *arduino/PWMpotentiometer* code, open up the terminal, and check the maximum and minimum PWM values. You may use the potentiometer as a PWM calibration utility. Please be careful when spinning the motors for long periods without propellers, they may burn!
 
 ## Setup for initial flight
@@ -189,3 +195,4 @@ Since the Bolt build will be noticeably heavier than a standard crazyflie, the d
 
 Another thing we have found is that the **Normal flight mode made the motors impossible to control** from take-off. That's because the minimum throttle is set to 25% by default, which is sufficient to violently flip the drone from the ground if there is a slight imbalance. To avoid that, you should fly in advanced flight mode, and lower the maximum and minimum values. Check the attached screenshot for reference.
 
+![cfclient setup](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/advanced-setup.png?raw=true)
