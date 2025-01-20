@@ -180,6 +180,20 @@ to the default configuration, you need to update the BLMC_PERIOD constant under 
 
 The compilation process remains the same. After applying the changes, compiling and flashing, you can measure the output signal with the oscilloscope to verify that it works as expected.
 
+Here is our preferred default config. You can replace bolt_defconfig file content with this:
+
+```
+CONFIG_PLATFORM_BOLT=y
+
+CONFIG_ESTIMATOR_AUTO_SELECT=y
+CONFIG_CONTROLLER_AUTO_SELECT=y
+#Modified for standard PWM instead of ONESHOT125
+CONFIG_MOTORS_ESC_PROTOCOL_STANDARD_PWM=y
+#CONFIG_MOTORS_ESC_PROTOCOL_ONESHOT42=y
+CONFIG_MOTORS_REQUIRE_ARMING=y
+CONFIG_MOTORS_DEFAULT_IDLE_THRUST=3500
+```
+
 ## ESC Firmware changes
 Since the ESCs were extracted from a different quadcopter build, an unexpected behaviour was observed during initial testing. The Tarot 6A ESCs run BLHeli (not S!), which is an outdated firmware version. Currently crazyflie-firmware does not allow BLHeli setup through the Bolt board. Therefore, an external programmer must be used. The best solution we have found is following [this tutorial](https://www.locarbftw.com/programming-a-blheli-esc-with-blheli-suite-for-use-with-autonomous-boats/). By using an Arduino UNO and reprogramming it as a 4-way interface, it can be connected through the GND and Signal wires of the ESC to digital pin 11. Note that these ESCs only run at 2S, while Arduino outputs 5V. Therefore, you'll need to connect the positive and GND cables of the ESC to the crazyflie board, and the GND (yes, you need a splitter here) and signal wires to the Arduino.
 
@@ -194,10 +208,74 @@ Once all the ESCs have been calibrated, you can connect a potentiometer to A3 in
 
 Since the Bolt build will be noticeably heavier than a standard crazyflie, the default PID values are way too high. For reference, a similar build with their adjusted PID parameters can be found in: [https://www.bitcraze.io/2020/10/testing-crazyflie-bolt-and-1-cell-li-ion/](https://www.bitcraze.io/2020/10/testing-crazyflie-bolt-and-1-cell-li-ion/). To modify the PID values, go to the parameters tab (activate it from the top bar if it's not visible), and look for the rate and attitude PID values. As a rule of thumb, you should start lowering the values until the quad is almost non-responsive, and start increasing the values until you are satisfied. Once you are happy, reducing the values a little bit is on the safe side. Rembember that **restarting the crazyflie will cause the parameters to reset to default**. If you want to keep the PID values, **make sure to write them to the persistent memory one by one**.
 
+Here is an example setup of the last tuned PID parameters. Note that these values are still not perfect and can cause some heavy oscillations or even crashes:
+![PID setup](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/current_PID.png?raw=true)
+
 Another thing we have found is that the **Normal flight mode made the motors impossible to control** from take-off. That's because the minimum throttle is set to 25% by default, which is sufficient to violently flip the drone from the ground if there is a slight imbalance. To avoid that, you should fly in advanced flight mode, and lower the maximum and minimum values. Check the attached screenshot for reference.
 
-![cfclient setup](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/advanced-setup.png?raw=true)
+![cfclient setup](https://github.com/danielalaez/MARSlab-NCKU-docs/blob/main/docs/img/advanced_setup.png?raw=true)
 
 Before your maiden flight, plug in the USB RC gamepad and create a new configuration to map all the channels. You can save that setup for future flights.
 
 With that set, you should be ready to go! Be careful with the throttle mapping, since USB RC simulator gamepads only recognize throttle from mid-stick > up.
+
+## Python autonomous control
+The last setup on setting up the Crazyflie bolt board is to allow for autonomous control. This can be achieved simply by using Crazyflie's Python API, which can be installed on your virtual environment by running:
+
+```
+pip3 install cflib
+```
+
+After successfully executing that command, you can create any Python file to control the Crazyflie. An important note is that **brushless boards such as bolt require an idle thrust when armed** so that all the motors are spinning before any motion command is sent. **If not, motors will start spinning during take-off at different speeds causing it to crash**. To set it up, into the parameters tab of *cfclient*, look for *idleThrust* and set a minimum value that sets all the motors to spin but not too high for the drone to take-off. For reference, **a value of 3000** has worked well for us. Remember to save the parameter as a default.
+
+An example Python code for testing is as follows:
+
+```python
+import logging
+import time
+import cflib.crtp
+from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
+from cflib.positioning.motion_commander import MotionCommander
+from cflib.crazyflie import Crazyflie
+from cflib.crazyflie.commander import Commander
+
+# URI for the Crazyflie
+URI = 'radio://0/80/2M'
+
+logging.basicConfig(level=logging.ERROR)
+
+def main():
+    cflib.crtp.init_drivers(enable_debug_driver=False)
+
+    with SyncCrazyflie(URI) as scf:
+        cf = scf.cf
+        
+        print("Starting slow motor rotation...")
+        cf.platform.send_arming_request(True)
+        time.sleep(2.0)
+
+        with MotionCommander(scf) as mc:
+            
+            print('Taking off!')
+            mc.up(0.5)
+            time.sleep(3)
+            mc.land()
+
+            # Now land the drone
+            print('Landing...')
+        
+        print("finished, disarming")
+        time.sleep(1.0)
+        cf.platform.send_arming_request(False)
+if __name__ == '__main__':
+    main()
+```
+
+You can simply create a new Python file, paste this, modify the radio URI to your current setup, and save it. To run it, in your virtual environment type:
+
+```
+python name_of_file.py
+```
+
+Calling *with MotionCommander(scf) as mc:* will automatically make the vehicle take off when entering this part of the code, and landing when exiting this part of the code. If something goes wrong (such as the drone flipping down), the supervisor state machine should stop spinning the motors.
+
