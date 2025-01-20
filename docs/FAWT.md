@@ -35,3 +35,9 @@ If you get some errors of missing packages, look for the name of the package and
 Open a new browser tab and paste the ip and port: http://127.0.0.1:5000/ (or the one printed in your terminal)
 
 Set the fan array size (6x6) and run. In the terminal you should see the messages sent to the Arduino board.
+
+## Known issues & WIP
+There is one known issue: after multiple successive commands sent to the FAWT, the terminal is known to freeze, causing the fans to not accept commands anymore.
+
+### WIP 
+An alternative control strategy is proposed: instead of sending individual control commands from the python server to the Arduino interface, and waiting for the velocity to be applied to the correct I2C servo controller, a single message containing the velocity array for all the fans may be sent from the Python server to the Arduino interface. The Arduino interface code should be modified to read the entire array and redirect the speed values to each fan. One known downside of this method is that updating a single fan velocity requires updating the entire array. This could be managed by recording the last commanded speed of each fan and only updating modified speeds, slightly increasing the code complexity.
